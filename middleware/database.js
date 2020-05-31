@@ -5,6 +5,7 @@ const MongoClient = require("mongodb").MongoClient,
 let db;
 
 function getDB() {
+    console.log(mongoURL);
     if (!db) {
         // Create connection
         client.connect(err => {
