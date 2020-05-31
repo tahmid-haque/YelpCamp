@@ -10,12 +10,10 @@ function isLoggedIn(req, res, next) {
 }
 
 async function isCampgroundOwner(req, res, next) {
-    let db = await database.getDB();
-
     req.isUser = false;
     if (req.isAuthenticated()) {
         if (!mongoID.isValid(req.params.id)) req.failure(res, "Invalid ID");
-        const campground = await db.collection('campgrounds')
+        const campground = await req.db.collection('campgrounds')
         .findOne({_id: mongoID(req.params.id)})
         .catch(err => req.failure(res, err));
         if (!campground) req.failure(res);
@@ -28,11 +26,9 @@ async function isCampgroundOwner(req, res, next) {
 }
 
 async function isReviewOwner(req, res, next) {
-    let db = await database.getDB();
-
     req.isUser = false;
     if (!mongoID.isValid(req.params.id)) req.failure(res, "Invalid ID");
-    const review = await db.collection('reviews')
+    const review = await req.db.collection('reviews')
         .findOne({_id: mongoID(req.params.id)})
         .catch(err => req.failure(res, err));
     if (!review) req.failure(res);

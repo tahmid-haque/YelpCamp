@@ -3,12 +3,14 @@ const express = require("express"),
     methodOverride = require('method-override'),
     routes = require('./routes'),
     initAuthentication = require('./middleware/passport').init,
+    database = require('./middleware/database').addDBtoReq,
     flash = require('connect-flash'),
     moment = require('moment'),
     middleware = require("./middleware").init;
 
 // Initialization
 app.set("view engine", "ejs");
+app.use(database);
 app.use(express.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));

@@ -8,7 +8,7 @@ const session = require("express-session"),
 function init(app) {
     passport.serializeUser((user, done) => {done(null, user._id)});
     passport.deserializeUser(async (id, done) => {
-        let db = await database.getDB();
+        let db = await database.getDB().catch();
 
         if (!mongoID.isValid(id)) req.failure(res, "Invalid ID");
         db.collection('users').findOne({_id: mongoID(id)}, (err, user) => {
@@ -18,7 +18,7 @@ function init(app) {
 
     passport.use(new LocalStrategy(
         async function (username, password, done) {
-            let db = await database.getDB();
+            let db = await database.getDB().catch();
 
             db.collection('users').findOne({username}, function (err, user) {
                 if (err) return done(err);

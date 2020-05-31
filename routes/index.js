@@ -18,10 +18,8 @@ router.get("/register", (req, res) => {
 
 // CREATE - Create new user
 router.post("/register", async (req, res) => {
-    let db = await database.getDB();
-
     if (!req.body.username || !req.body.password) req.failure(res, "Blank username/password", "Please ensure both username and password are given.", '/register');
-    db.collection('users').findOne({username: req.body.username})
+    req.db.collection('users').findOne({username: req.body.username})
     .then(async dupe => {
         if (dupe) {
             req.flash('error', 'The user already exists! Please use another username.')
@@ -31,7 +29,7 @@ router.post("/register", async (req, res) => {
             let user = {username: req.body.username};
             user.password = await bcrypt.hash(req.body.password, 10);
             
-            db.collection('users').insertOne(user, (err, r) => {
+            req.db.collection('users').insertOne(user, (err, r) => {
                 if (err || r.insertedCount !== 1) req.failure(res, err);
                 passport.authenticate('local')(req, res, () => {
                     req.flash('success', `Welcome to Yelpcamp, ${user.username}`);

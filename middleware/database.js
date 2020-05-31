@@ -7,7 +7,6 @@ let db;
 async function getDB() {
     if (!db) {
         // Create connection
-
         await client.connect();
 
         db = client.db('yelpCamp');
@@ -20,4 +19,11 @@ async function getDB() {
     return db;
 }
 
-module.exports = {getDB};
+async function addDBtoReq(req, res, next) {
+    req.db = await getDB();
+
+    if (client.isConnected()) return next();
+    else res.render('landing', {success: "", error: 'Our database is unavailable right now... please try again later.'})
+}
+
+module.exports = {getDB, addDBtoReq};

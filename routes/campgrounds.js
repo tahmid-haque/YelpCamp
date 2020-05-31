@@ -6,9 +6,7 @@ const router = require('express').Router(),
 
 // INDEX - Display a list of all campgrounds
 router.get("/", async (req, res) => {
-    let db = await database.getDB();
-
-    const campgrounds = await db.collection('campgrounds').find().toArray()
+    const campgrounds = await req.db.collection('campgrounds').find().toArray()
         .catch(err => req.failure(res, err));
 
     await campgrounds.sort((a, b) => {
@@ -21,9 +19,7 @@ router.get("/", async (req, res) => {
 
 // CREATE - Add new campground to DB
 router.post("/", isLoggedIn, async (req, res) => {
-    let db = await database.getDB();
-
-    db.collection('campgrounds').insertOne({
+    req.db.collection('campgrounds').insertOne({
         name: req.body.name, 
         image: req.body.URL, 
         price: req.body.price,
@@ -52,12 +48,10 @@ router.get("/new", isLoggedIn, (req, res) => {
 
 // SHOW - Shows info about one campground
 router.get("/:id", isUser, async (req, res) => {
-    let db = await database.getDB();
-
     if (!mongoID.isValid(req.params.id)) req.failure(res, "Invalid ID");
 
     const campground = (req.campground !== undefined) ? req.campground : 
-    await db.collection('campgrounds')
+    await req.db.collection('campgrounds')
         .findOne({_id: mongoID(req.params.id)})
         .catch(err => req.failure(res, err));
     
@@ -65,7 +59,7 @@ router.get("/:id", isUser, async (req, res) => {
     
     campground.reviews = await Promise.all(campground.reviews.map(id => {
             if (!mongoID.isValid(id)) req.failure(res, "Invalid ID");
-            return db.collection('reviews').findOne({_id: mongoID(id)});
+            return req.db.collection('reviews').findOne({_id: mongoID(id)});
         }))
         .catch(err => {req.failure(res, err)});
     
@@ -89,11 +83,9 @@ router.get("/:id/edit", isUser, async (req, res) => {
 
 // UPDATE - Update a campground
 router.put("/:id", isUser, async (req, res) => {
-    let db = await database.getDB();
-
     if (req.isUser) {
         if (!mongoID.isValid(req.params.id)) req.failure(res, "Invalid ID");
-        else db.collection('campgrounds').updateOne({_id: mongoID(req.params.id)}, {
+        else req.db.collection('campgrounds').updateOne({_id: mongoID(req.params.id)}, {
             $set: {
                 name: req.body.name, 
                 image: req.body.URL, 
@@ -115,14 +107,12 @@ router.put("/:id", isUser, async (req, res) => {
 
 // DESTROY - Remove a campground
 router.delete("/:id", isUser, async (req, res) => {
-    let db = await database.getDB();
-
     if (req.isUser) {
         if (!mongoID.isValid(req.params.id)) req.failure(res, "Invalid ID");
-        else db.collection('campgrounds').findOneAndDelete({_id: mongoID(req.params.id)}, (err, r) => {
+        else req.db.collection('campgrounds').findOneAndDelete({_id: mongoID(req.params.id)}, (err, r) => {
             if (err || r.ok !== 1) req.failure(res, err);
             else {
-                db.collection("reviews").deleteMany({_id: {$in: r.value.reviews}}, (err, f) => {
+                req.db.collection("reviews").deleteMany({_id: {$in: r.value.reviews}}, (err, f) => {
                     if (err || f.deletedCount !== r.value.reviews.length) req.failure(res, err);
                     else {
                         req.flash('success', 'Your campground was successfully removed.');
