@@ -1,0 +1,62 @@
+<%- include("../partials/header.ejs")  %> 
+<div class="w-50 mx-auto mt-5">
+    <h1 class="text-center display-4 mb-4"><%= campground.name %></h1>
+    <h2 class="text-center display-5 mb-3">Add New Review</h2>
+    <form class="w-50 mx-auto" action="/campgrounds/<%= campground._id %>/reviews" method="POST">
+        <div class="form-group">
+            <textarea class="form-control" name="text" rows="3" placeholder="Write your review here"></textarea>
+        </div>
+
+        <input id="rating" type="number" class="d-none" readonly="readonly" value='3' name="rating">
+
+        <div class="form-group">
+            <div class="rating large star-icon direction-ltr value-3 color-negative label-top slow">
+                <div class="label-value">Select a Rating:</div>
+                 <div class="star-container">
+                     <div class="star" id='1'>
+                         <i class="star-empty"></i>
+                         <i class="star-half"></i>
+                         <i class="star-filled"></i>
+                     </div>
+                     <div class="star" id='2'>
+                         <i class="star-empty"></i>
+                         <i class="star-half"></i>
+                         <i class="star-filled"></i>
+                     </div>
+                     <div class="star" id='3'>
+                        <i class="star-empty"></i>
+                        <i class="star-half"></i>
+                        <i class="star-filled"></i>
+                    </div>
+                    <div class="star" id='4'>
+                        <i class="star-empty"></i>
+                        <i class="star-half"></i>
+                        <i class="star-filled"></i>
+                    </div>
+                     <div class="star" id='5'>
+                         <i class="star-empty"></i>
+                         <i class="star-half"></i>
+                         <i class="star-filled"></i>
+                     </div>
+                 </div>
+             </div>
+        </div>
+        
+
+        <button type="submit" class="btn btn-outline-primary w-100 btn-lg mb-3">Submit</button>
+        <a href="/campgrounds/<%= campground._id %>/">Return to Campground</a>
+    </form>
+</div>
+
+<script>
+    for (let i = 1; i < 6; i++) {
+        $(`#${i}`).click(() => {
+            $('#rating').val(String(i));
+            $('.rating')
+                .removeClass('value-0 value-1 value-2 value-3 value-4 value-5')
+                .addClass(`value-${i}`);
+        });
+    };
+</script>
+
+<%- include("../partials/footer.ejs")  %> 

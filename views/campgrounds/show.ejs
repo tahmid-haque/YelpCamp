@@ -1,0 +1,159 @@
+<%- include("../partials/header.ejs")  %> 
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="sidebar">
+                <div class="list-group">
+                    <li class="list-group-item  list-group-item-action active" id="info-tab">Information</li>
+                    <li class="list-group-item  list-group-item-action" id="location-tab">Location</li>
+                    <li class="list-group-item  list-group-item-action" id="reviews-tab">Reviews</li>
+                </div>
+                <a href="/campgrounds" class="btn btn-outline-danger w-100 mt-3">Return to Campgrounds</a>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="card" id="info">
+                <img src=" <%= campground.image %> " alt="" class="card-im-top">
+                <div class="card-body d-flex flex-column">
+                    <span class="d-flex justify-content-between">
+                        <h4><%= campground.name %></h4>
+                        <h6>$<%= parseFloat(campground.price).toFixed(2) %>/Night</h6>
+                    </span>
+                    <%= campground.description %>
+                    <span class="d-flex mb-0 mt-2 align-items-center">
+                        <% if (isUser) { %>
+                            <a href="/campgrounds/<%= campground._id %>/edit" class="btn btn-outline-warning">Edit</a>
+                            <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+                                <button class="btn btn-outline-danger ml-2">Delete</button>
+                            </form>
+                        <% } %>
+                        <span class="d-flex flex-column ml-auto">
+                            <strong class="font-italic text-right">Submitted By <%= campground.author.username %></strong>
+                            <span class="font-italic text-right lastModified">Last Updated <%= moment(campground.lastModified).fromNow() %></span>
+                        </span>
+                    </span>
+                </div>
+            </div> 
+            
+            <div class="card flex-column mt-4" id="location">
+                <h1 class="mx-4 my-2">Location</h1>
+                <div class="mx-4 mb-3" id='map' style='height: 60vh; border-radius: 2%;'></div>
+            </div>
+
+            <div class="card bg-light flex-column my-4" id="reviews">
+                <span class="d-flex justify-content-between align-items-center mx-4 mt-2">
+                    <h1 class="">Reviews</h1>
+                    <a class="btn btn-outline-primary" href="/campgrounds/<%= campground._id %>/reviews/new"><i class="fas fa-plus pr-2"></i>Add New Review</a>
+                </span>
+
+                <% if (campground.reviews.length !== 0) { %>
+                    <span class="d-flex align-items-center mx-4 mb-1">
+                        <h6 class="display-4"><%= parseFloat(campground.averageRating).toFixed(1) %> <i class="fas fa-star"></i><span class="mx-2">|</span><%= campground.reviews.length %>  Rating(s)</h6>
+                    </span>
+                <% } %>
+                
+                <% campground.reviews.forEach(review => { %>
+                    <hr class="mt-1">
+                    <div class="row m-2">
+                        <div class="col-md-12">
+                            <div class="d-flex">
+                                <strong><%= review.author.username %> </strong>
+                                <span class="mx-2">|</span>
+                                <span class="lastModified mr-auto"><%= moment(review.lastModified).fromNow() %></span>
+                                <span><div class="rating medium star-icon direction-ltr value-<%= review.rating %>  color-negative slow">
+                                     <div class="star-container">
+                                         <div class="star" id='1'>
+                                             <i class="star-empty"></i>
+                                             <i class="star-half"></i>
+                                             <i class="star-filled"></i>
+                                         </div>
+                                         <div class="star" id='2'>
+                                             <i class="star-empty"></i>
+                                             <i class="star-half"></i>
+                                             <i class="star-filled"></i>
+                                         </div>
+                                         <div class="star" id='3'>
+                                            <i class="star-empty"></i>
+                                            <i class="star-half"></i>
+                                            <i class="star-filled"></i>
+                                        </div>
+                                        <div class="star" id='4'>
+                                            <i class="star-empty"></i>
+                                            <i class="star-half"></i>
+                                            <i class="star-filled"></i>
+                                        </div>
+                                         <div class="star" id='5'>
+                                             <i class="star-empty"></i>
+                                             <i class="star-half"></i>
+                                             <i class="star-filled"></i>
+                                         </div>
+                                     </div>
+                                 </div></span>
+                            </div>
+                            <p class="mb-2"><%= review.text %></p>
+                            <% if (review.isUser) { %>
+                                <span class="d-flex">
+                                    <a href="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>/edit?_method=PUT" class="btn btn-sm btn-outline-warning">Edit</a>
+                                    <form action="/campgrounds/<%= campground._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+                                        <button class="btn btn-sm btn-outline-danger ml-2">Delete</button>
+                                    </form>
+                                </span>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+                <% if (campground.reviews.length === 0) { %>
+                    <hr class="mt-1 mb-0">
+                    <div class="mx-4 my-3">
+                        No Reviews Yet! Be the first to review <%= campground.name %>.
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src='/scripts/lib/jquery.scrollTo.min.js'></script>
+<script>
+    $('.sidebar').width($('.sidebar').parent().width());
+    window.onresize = () => $('.sidebar').width($('.sidebar').parent().width());
+    const navHeight = $('.navbar').height() + 25;
+
+    $(window).scroll(function() {
+        $(".list-group-item").removeClass("active");
+        if($(this).scrollTop() > $('#location').offset().top + 0.6 * $('#location').height()) {
+            $("#reviews-tab").addClass("active");
+        }
+        else if ($(this).scrollTop() > $('#info').offset().top + 0.6 * $('#info').height()) {
+            $("#location-tab").addClass("active");
+        }
+        else $("#info-tab").addClass("active");
+    })
+
+    $('#info-tab').click(() => {
+        $.scrollTo(0, 500);
+    });
+    
+    $('#location-tab').click(() => {
+        $.scrollTo($("#location").offset().top - navHeight, 500);
+    });
+
+    $('#reviews-tab').click(() => {
+        $.scrollTo($("#reviews").offset().top - navHeight, 500);
+    });
+
+    const loc = [<%= campground.location %>];
+
+    mapboxgl.accessToken = '<%= MAPBOX_TOKEN %>';
+    let map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center:  loc,
+        zoom: 15
+    });
+
+    let marker = new mapboxgl.Marker()
+        .setLngLat(loc)
+        .addTo(map);
+</script>
+<%- include("../partials/footer.ejs") %> 

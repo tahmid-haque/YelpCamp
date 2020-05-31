@@ -1,0 +1,63 @@
+img {
+    object-fit: cover;
+}
+
+.card.h-100 {
+    border-radius: 5%;
+}
+
+.card.h-100 img {
+    height: 40vh; 
+    max-height: 275px;  
+    border-radius: 5% 5% 0 0;
+}
+
+.col-md-9 .card {
+    border-radius: 1%;
+}
+.col-md-9 .card img {
+    border-radius: 1% 1% 0 0;
+    height: 65vh;
+}
+
+.w-50.mx-auto form {
+    min-width: 250px;
+}
+
+.navbar {
+    -webkit-box-shadow: 0px 2px 5px 0px rgba(133,133,133,1);
+    -moz-box-shadow: 0px 2px 5px 0px rgba(133,133,133,1);
+    box-shadow: 0px 2px 5px 0px rgba(133,133,133,1);
+}
+
+.list-group {
+    cursor: default;
+}
+
+.lastModified {
+    text-transform: capitalize;
+    font-style: italic;
+}
+
+@media (min-width: 768px) {
+    .sidebar {
+        position: fixed;
+    }
+}
+
+.label-value {
+  font-weight: 700;
+}
+
+.display-4 {
+    font-size: 1.8rem;
+}
+
+.fa-star {
+    color: rgb(240, 60, 86);
+}
+
+.unreviewed {
+    color:rgb(240, 60, 86);
+    font-size: 1.1rem;
+}

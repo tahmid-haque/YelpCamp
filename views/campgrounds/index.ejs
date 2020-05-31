@@ -1,0 +1,58 @@
+<%- include("../partials/header.ejs")  %> 
+<div class="container">
+    <header class="jumbotron mt-4">
+        <h1 class="display-3">Welcome to YelpCamp!</h1>
+        <p class="lead">View our hand-picked campgrounds from all over the world!</p>
+        <a href="/campgrounds/new" class="btn btn-lg btn-outline-primary"><i class="fas fa-plus pr-2"></i>Add New Campground</a>
+    </header>
+    
+    <div class="row">
+        <% campgrounds.forEach(e => { %>
+            <div class="col-lg-4 col-sm-6 col-xl-3 mb-5">
+                <div class="card h-100">
+                    <img class="card-im-top"src=" <%= e.image %> " alt="">
+                    <div class="card-body text-center d-flex flex-column justify-content-between">
+                        <h4 class="card-title my-auto"><%= e.name %></h4>
+
+                        <% if (e.averageRating != '0') { %>
+                            <div class="rating large star-icon direction-ltr value-<%= parseFloat(e.averageRating).toFixed(0) %> color-negative slow mt-1">
+                                <div class="star-container">
+                                    <div class="star" id='1'>
+                                        <i class="star-empty"></i>
+                                        <i class="star-half"></i>
+                                        <i class="star-filled"></i>
+                                    </div>
+                                    <div class="star" id='2'>
+                                        <i class="star-empty"></i>
+                                        <i class="star-half"></i>
+                                        <i class="star-filled"></i>
+                                    </div>
+                                    <div class="star" id='3'>
+                                    <i class="star-empty"></i>
+                                    <i class="star-half"></i>
+                                    <i class="star-filled"></i>
+                                </div>
+                                <div class="star" id='4'>
+                                    <i class="star-empty"></i>
+                                    <i class="star-half"></i>
+                                    <i class="star-filled"></i>
+                                </div>
+                                    <div class="star" id='5'>
+                                        <i class="star-empty"></i>
+                                        <i class="star-half"></i>
+                                        <i class="star-filled"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } else {%>
+                            <em class="unreviewed mt-2 mb-1">No Reviews Yet</em>
+                        <% } %>
+
+                        <a href="/campgrounds/<%= e._id %> " class="btn btn-outline-info mt-2 align-self-center">Learn More</a>
+                    </div>
+                </div>                
+            </div>
+        <% }) %>
+    </div>
+</div>
+<%- include("../partials/footer.ejs")  %> 
