@@ -7,10 +7,10 @@ let db;
 async function getDB() {
     if (!db) {
         // Create connection
-        await client.connect(err => {
+        await client.connect((err, cli => {
             if (err) throw err;
+            else db = cli.db("yelpCamp");
         });
-        db = client.db("yelpCamp");
 
         // Close connection on server close
         [`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `uncaughtException`, `SIGTERM`].forEach((eventType) => {
