@@ -6,6 +6,7 @@ const router = require('express').Router(),
 
 // INDEX - Display a list of all campgrounds
 router.get("/", async (req, res) => {
+    await db;
     const campgrounds = await db.collection('campgrounds').find().toArray()
         .catch(err => req.failure(res, err));
 
