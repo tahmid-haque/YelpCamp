@@ -1,6 +1,6 @@
 const router = require('express').Router(),
     bcrypt = require('bcrypt'),
-    db = require("../middleware/database").getDB(),
+    database = require("../middleware/database"),
     passport = require("../middleware/passport").passport,
     campgroundRoutes = require("./campgrounds"),
     reviewRoutes = require("./reviews"),
@@ -17,7 +17,9 @@ router.get("/register", (req, res) => {
 });
 
 // CREATE - Create new user
-router.post("/register", (req, res) => {
+router.post("/register", async (req, res) => {
+    let db = await database.getDB();
+
     if (!req.body.username || !req.body.password) req.failure(res, "Blank username/password", "Please ensure both username and password are given.", '/register');
     db.collection('users').findOne({username: req.body.username})
     .then(async dupe => {

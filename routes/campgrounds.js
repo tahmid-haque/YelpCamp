@@ -1,12 +1,13 @@
 const router = require('express').Router(),
-    db = require("../middleware/database").getDB(),
+    database = require("../middleware/database"),
     mongoID = require("mongodb").ObjectID,
     isLoggedIn = require("../middleware").isLoggedIn,
     isUser = require("../middleware").isCampgroundOwner;
 
 // INDEX - Display a list of all campgrounds
 router.get("/", async (req, res) => {
-    await db;
+    let db = await database.getDB();
+
     const campgrounds = await db.collection('campgrounds').find().toArray()
         .catch(err => req.failure(res, err));
 
@@ -19,7 +20,9 @@ router.get("/", async (req, res) => {
 });
 
 // CREATE - Add new campground to DB
-router.post("/", isLoggedIn, (req, res) => {
+router.post("/", isLoggedIn, async (req, res) => {
+    let db = await database.getDB();
+
     db.collection('campgrounds').insertOne({
         name: req.body.name, 
         image: req.body.URL, 
@@ -49,6 +52,8 @@ router.get("/new", isLoggedIn, (req, res) => {
 
 // SHOW - Shows info about one campground
 router.get("/:id", isUser, async (req, res) => {
+    let db = await database.getDB();
+
     if (!mongoID.isValid(req.params.id)) req.failure(res, "Invalid ID");
 
     const campground = (req.campground !== undefined) ? req.campground : 
@@ -83,10 +88,12 @@ router.get("/:id/edit", isUser, async (req, res) => {
 });
 
 // UPDATE - Update a campground
-router.put("/:id", isUser, (req, res) => {
+router.put("/:id", isUser, async (req, res) => {
+    let db = await database.getDB();
+
     if (req.isUser) {
         if (!mongoID.isValid(req.params.id)) req.failure(res, "Invalid ID");
-        db.collection('campgrounds').updateOne({_id: mongoID(req.params.id)}, {
+        else db.collection('campgrounds').updateOne({_id: mongoID(req.params.id)}, {
             $set: {
                 name: req.body.name, 
                 image: req.body.URL, 
@@ -107,10 +114,12 @@ router.put("/:id", isUser, (req, res) => {
 });
 
 // DESTROY - Remove a campground
-router.delete("/:id", isUser, (req, res) => {
+router.delete("/:id", isUser, async (req, res) => {
+    let db = await database.getDB();
+
     if (req.isUser) {
         if (!mongoID.isValid(req.params.id)) req.failure(res, "Invalid ID");
-        db.collection('campgrounds').findOneAndDelete({_id: mongoID(req.params.id)}, (err, r) => {
+        else db.collection('campgrounds').findOneAndDelete({_id: mongoID(req.params.id)}, (err, r) => {
             if (err || r.ok !== 1) req.failure(res, err);
             else {
                 db.collection("reviews").deleteMany({_id: {$in: r.value.reviews}}, (err, f) => {

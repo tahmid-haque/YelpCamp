@@ -7,10 +7,10 @@ let db;
 async function getDB() {
     if (!db) {
         // Create connection
-        await client.connect((err, cli => {
-            if (err) throw err;
-            else db = cli.db("yelpCamp");
-        });
+
+        await client.connect();
+
+        db = client.db('yelpCamp');
 
         // Close connection on server close
         [`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `uncaughtException`, `SIGTERM`].forEach((eventType) => {
@@ -20,10 +20,4 @@ async function getDB() {
     return db;
 }
 
-function checkDbConnection(req, res, next) {
-    if (client.isConnected()) return next();
-    req.flash('error', 'Something went wrong... please try again.');
-    res.render('landing');
-}
-
-module.exports = {getDB, checkDbConnection}
+module.exports = {getDB};

@@ -5,7 +5,6 @@ const express = require("express"),
     initAuthentication = require('./middleware/passport').init,
     flash = require('connect-flash'),
     moment = require('moment'),
-    dbConnected = require('./middleware/database').checkDbConnection;
     middleware = require("./middleware").init;
 
 // Initialization
@@ -21,9 +20,6 @@ initAuthentication(app);
 app.use(flash());
 app.locals.moment = moment;
 app.use(middleware);
-
-// Database
-app.use(dbConnected);
 
 // Routes
 app.use(routes);

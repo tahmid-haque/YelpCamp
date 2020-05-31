@@ -1,10 +1,12 @@
 const router = require('express').Router({mergeParams: true}),
-    db = require("../middleware/database").getDB(),
+    database = require("../middleware/database"),
     mongoID = require("mongodb").ObjectID,
     isUser = require("../middleware").isReviewOwner;
 
 // NEW - Open form to create a new review
 router.get("/new", async (req, res) => {
+    let db = await database.getDB();
+
     if (!mongoID.isValid(req.params.campground)) req.failure(res, "Invalid ID");
     const campground = await db.collection('campgrounds')
         .findOne({_id: mongoID(req.params.campground)})
@@ -15,6 +17,8 @@ router.get("/new", async (req, res) => {
 
 // Create - Add the newly made review to the campground
 router.post("/", async (req, res) => {
+    let db = await database.getDB();
+
     await db.collection('reviews').insertOne({
         author: {
             username: req.user.username, 
@@ -43,6 +47,8 @@ router.post("/", async (req, res) => {
 
 // EDIT - Open the review edit form
 router.get("/:id/edit", isUser, async (req, res) => {
+    let db = await database.getDB();
+
     if (!mongoID.isValid(req.params.campground)) req.failure(res, "Invalid ID");
     const campground = await db.collection('campgrounds')
         .findOne({_id: mongoID(req.params.campground)})
@@ -57,6 +63,8 @@ router.get("/:id/edit", isUser, async (req, res) => {
 
 // UPDATE - Update a review
 router.put("/:id", isUser, async (req, res) => {
+    let db = await database.getDB();
+
     if (req.isUser) {
         if (!mongoID.isValid(req.params.campground)) req.failure(res, "Invalid ID");
 
@@ -80,6 +88,8 @@ router.put("/:id", isUser, async (req, res) => {
 
 // DESTROY - Remove a review
 router.delete("/:id", isUser, async (req, res) => {
+    let db = await database.getDB();
+
     if (req.isUser) {
         if (!mongoID.isValid(req.params.campground)) req.failure(res, "Invalid ID");
         if (!mongoID.isValid(req.params.id)) req.failure(res, "Invalid ID");
@@ -112,23 +122,13 @@ function verificationFailed(req, res) {
 }
 
 async function updateRating(req, res, newRating, prevRating) {
+    let db = await database.getDB();
+
     const campground = await db.collection('campgrounds')
         .findOne({_id: mongoID(req.params.campground)})
         .catch(err => req.failure(res, err));
-
-    console.log('campground.averageRating', campground.averageRating)
-    console.log('campground.reviews.length', campground.reviews.length)
-    console.log('prevRating', prevRating)
-    console.log('newRating', newRating)
     
     let averageRating;
-
-    if (prevRating) {
-        averageRating = (Number(campground.averageRating) * campground.reviews.length - Number(prevRating) + Number(newRating)) / campground.reviews.length;
-    }
-    else {
-        
-    }
 
     if (!prevRating) {
         averageRating = (Number(campground.averageRating) * (campground.reviews.length - 1) + Number(newRating)) / campground.reviews.length;

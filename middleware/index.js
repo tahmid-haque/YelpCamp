@@ -1,4 +1,4 @@
-const db = require("./database").getDB(),
+const database = require("./database"),
     mongoID = require("mongodb").ObjectID;
 
 function isLoggedIn(req, res, next) {
@@ -10,6 +10,8 @@ function isLoggedIn(req, res, next) {
 }
 
 async function isCampgroundOwner(req, res, next) {
+    let db = await database.getDB();
+
     req.isUser = false;
     if (req.isAuthenticated()) {
         if (!mongoID.isValid(req.params.id)) req.failure(res, "Invalid ID");
@@ -26,6 +28,8 @@ async function isCampgroundOwner(req, res, next) {
 }
 
 async function isReviewOwner(req, res, next) {
+    let db = await database.getDB();
+
     req.isUser = false;
     if (!mongoID.isValid(req.params.id)) req.failure(res, "Invalid ID");
     const review = await db.collection('reviews')

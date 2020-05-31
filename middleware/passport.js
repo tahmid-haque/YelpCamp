@@ -2,12 +2,14 @@ const session = require("express-session"),
     passport = require('passport'),
     LocalStrategy = require("passport-local").Strategy,
     bcrypt = require('bcrypt'),
-    db = require("./database").getDB(),
+    database = require("./database"),
     mongoID = require("mongodb").ObjectID;
 
 function init(app) {
     passport.serializeUser((user, done) => {done(null, user._id)});
-    passport.deserializeUser((id, done) => {
+    passport.deserializeUser(async (id, done) => {
+        let db = await database.getDB();
+
         if (!mongoID.isValid(id)) req.failure(res, "Invalid ID");
         db.collection('users').findOne({_id: mongoID(id)}, (err, user) => {
             done(err, user);
@@ -15,11 +17,13 @@ function init(app) {
     });
 
     passport.use(new LocalStrategy(
-        function (username, password, done) {
+        async function (username, password, done) {
+            let db = await database.getDB();
+
             db.collection('users').findOne({username}, function (err, user) {
                 if (err) return done(err);
-                if (!user) return done(null, false);
-                if (!(bcrypt.compareSync(password, user.password))) return done(null, false);
+                else if (!user) return done(null, false);
+                else if (!(bcrypt.compareSync(password, user.password))) return done(null, false);
                 return done(null, user);
             });
         }
