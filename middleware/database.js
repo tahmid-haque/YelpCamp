@@ -4,11 +4,10 @@ const MongoClient = require("mongodb").MongoClient,
 
 let db;
 
-function getDB() {
-    console.log(mongoURL);
+async function getDB() {
     if (!db) {
         // Create connection
-        client.connect(err => {
+        await client.connect(err => {
             if (err) throw err;
         });
         db = client.db("yelpCamp");
