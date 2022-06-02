@@ -16,3 +16,4 @@ Technologies used in this website's construction:
 * Bootstrap
 * JQuery
 * HTML / CSS / JS
+* MongoDB
