@@ -1,6 +1,5 @@
 # YelpCamp
-This project was completed as part of an online web development course and later enhanced / customized by me.
-The website was formerly deployed [here](https://yelpcamp-th.herokuapp.com/) using Heroku.
+A simple web app that supports browsing and reviewing campsites across the world. It was completed as part of an online web development course and later enhanced / customized by me. The website was formerly deployed [here](https://yelpcamp-th.herokuapp.com/) using Heroku.
 
 Capabilities of this website include:
 * User authentication & authorization
