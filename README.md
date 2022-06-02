@@ -10,3 +10,10 @@ Capabilities of this website include:
 * Viewing the location of aany uploaded campsite on a map
 * Deleting camp sites or reviews
 * Updating campsites or reviews
+
+Technologies used in this website's construction:
+* NodeJS
+* Express w/ EJS
+* Bootstrap
+* JQuery
+* HTML / CSS / JS
